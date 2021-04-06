@@ -222,6 +222,7 @@ class CategoryItem extends StatelessWidget {
     return ListTile(
         title: Text(category.strCategory),
         leading: Image.network(category.strCategoryThumb),
+        minVerticalPadding: 32,
         onTap: () => onTap(category.idCategory));
   }
 }
