@@ -1,4 +1,4 @@
-name: Meal Database App
+name: mealapp
 description: a flutter app to get meals from themealdb.com
 
 # The following line prevents the package from being accidentally published to
