@@ -93,30 +93,84 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fetch Data Example',
+      title: 'Meal Database App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Fetch Data Example'),
+          title: Text('Meal Database App'),
         ),
         body: Center(
-          child: FutureBuilder<Categories>(
-            future: futureCategories,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.categories.first.strCategory);
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
-          ),
+          child: CategoriesScreen(futureCategories: futureCategories),
         ),
       ),
+    );
+  }
+}
+
+class CategoriesScreen extends StatelessWidget {
+  const CategoriesScreen({
+    Key? key,
+    required this.futureCategories,
+  }) : super(key: key);
+
+  final Future<Categories> futureCategories;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Categories>(
+      future: futureCategories,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // return Text(snapshot.data!.categories.first.strCategory);
+          return CategoryList(
+            categories: snapshot.data!.categories,
+          );
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+
+        // By default, show a loading spinner.
+        return CircularProgressIndicator();
+      },
+    );
+  }
+}
+
+class CategoryList extends StatelessWidget {
+  const CategoryList({
+    required this.categories,
+    Key? key,
+  }) : super(key: key);
+
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        padding: const EdgeInsets.all(8),
+        itemCount: categories.length,
+        itemBuilder: (BuildContext context, int index) {
+          return CategoryItem(category: categories[index]);
+        });
+  }
+}
+
+class CategoryItem extends StatelessWidget {
+  const CategoryItem({
+    required this.category,
+    Key? key,
+  }) : super(key: key);
+
+  final Category category;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      // color: Colors.amber[colorCodes[index]],
+      child: Center(child: Text('${category.strCategory}')),
     );
   }
 }
