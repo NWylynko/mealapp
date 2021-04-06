@@ -4,6 +4,89 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future<Categories> futureCategories;
+  String selectedCategory = '';
+
+  @override
+  void initState() {
+    super.initState();
+    futureCategories = fetchCategories();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Meal Database App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Navigator(
+        pages: [
+          MaterialPage(
+            child: HomePage(
+                futureCategories: futureCategories,
+                onTapCategory: _handleCategoryTapped),
+          ),
+          if (selectedCategory != '')
+            MaterialPage(child: Text('${selectedCategory}')),
+        ],
+        onPopPage: (route, result) {
+          if (!route.didPop(result)) {
+            return false;
+          }
+
+          // Update the list of pages by setting _selectedBook to null
+          setState(() {
+            selectedCategory = '';
+          });
+
+          return true;
+        },
+      ),
+    );
+  }
+
+  void _handleCategoryTapped(String categoryId) {
+    setState(() {
+      selectedCategory = categoryId;
+    });
+  }
+}
+
+// HomePage(futureCategories: futureCategories)
+
+class HomePage extends StatelessWidget {
+  const HomePage(
+      {Key? key, required this.futureCategories, required this.onTapCategory})
+      : super(key: key);
+
+  final Future<Categories> futureCategories;
+  final ValueChanged<String> onTapCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Meal Database App'),
+      ),
+      body: Center(
+        child: CategoriesScreen(
+            futureCategories: futureCategories, onTapCategory: onTapCategory),
+      ),
+    );
+  }
+}
+
 Future<Categories> fetchCategories() async {
   final response = await http
       .get(Uri.https("www.themealdb.com", 'api/json/v1/1/categories.php'));
@@ -72,50 +155,13 @@ class Category {
       };
 }
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
-
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late Future<Categories> futureCategories;
-
-  @override
-  void initState() {
-    super.initState();
-    futureCategories = fetchCategories();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Meal Database App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Meal Database App'),
-        ),
-        body: Center(
-          child: CategoriesScreen(futureCategories: futureCategories),
-        ),
-      ),
-    );
-  }
-}
-
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({
-    Key? key,
-    required this.futureCategories,
-  }) : super(key: key);
+  const CategoriesScreen(
+      {Key? key, required this.futureCategories, required this.onTapCategory})
+      : super(key: key);
 
   final Future<Categories> futureCategories;
+  final ValueChanged<String> onTapCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +172,7 @@ class CategoriesScreen extends StatelessWidget {
           // return Text(snapshot.data!.categories.first.strCategory);
           return CategoryList(
             categories: snapshot.data!.categories,
+            onTapCategory: onTapCategory,
           );
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -141,10 +188,12 @@ class CategoriesScreen extends StatelessWidget {
 class CategoryList extends StatelessWidget {
   const CategoryList({
     required this.categories,
+    required this.onTapCategory,
     Key? key,
   }) : super(key: key);
 
   final List<Category> categories;
+  final ValueChanged<String> onTapCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +201,8 @@ class CategoryList extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         itemCount: categories.length,
         itemBuilder: (BuildContext context, int index) {
-          return CategoryItem(category: categories[index]);
+          return CategoryItem(
+              category: categories[index], onTap: onTapCategory);
         });
   }
 }
@@ -160,17 +210,18 @@ class CategoryList extends StatelessWidget {
 class CategoryItem extends StatelessWidget {
   const CategoryItem({
     required this.category,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
 
   final Category category;
+  final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      // color: Colors.amber[colorCodes[index]],
-      child: Center(child: Text('${category.strCategory}')),
-    );
+    return ListTile(
+        title: Text(category.strCategory),
+        leading: Image.network(category.strCategoryThumb),
+        onTap: () => onTap(category.idCategory));
   }
 }
