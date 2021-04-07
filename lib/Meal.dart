@@ -60,7 +60,12 @@ class MealItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(meal.strMeal);
+    return Column(children: [
+      Image.network(meal.strMealThumb),
+      Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(32, 32, 32, 32),
+          child: Text(meal.strMeal))
+    ]);
   }
 }
 
