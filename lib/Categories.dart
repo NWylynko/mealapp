@@ -7,11 +7,15 @@ import 'package:http/http.dart' as http;
 
 class HomePage extends StatelessWidget {
   const HomePage(
-      {Key? key, required this.futureCategories, required this.onTapCategory})
+      {Key? key,
+      required this.futureCategories,
+      required this.onTapCategory,
+      required this.onSearch})
       : super(key: key);
 
   final Future<Categories> futureCategories;
   final ValueChanged<String> onTapCategory;
+  final ValueChanged<String> onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class HomePage extends StatelessWidget {
       bottomSheet: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(32, 32, 32, 32),
         child: CupertinoSearchTextField(
-          onSubmitted: (value) => print(value),
+          onSubmitted: (value) => onSearch(value.toString()),
         ),
       ),
     );

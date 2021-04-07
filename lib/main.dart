@@ -5,6 +5,7 @@ import 'package:mealapp/Meal.dart';
 import './Meals.dart';
 import './Meal.dart';
 import './Categories.dart';
+import './search.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,8 +20,10 @@ class _MyAppState extends State<MyApp> {
   late Future<Categories> futureCategories;
   late Future<Meals> futureMeals;
   late Future<MealDetails> futureMeal;
+  late Future<MealDetails> futureMealSearch;
   bool showMealsPage = false;
   bool showMealPage = false;
+  bool showSearchPage = false;
 
   @override
   void initState() {
@@ -38,14 +41,21 @@ class _MyAppState extends State<MyApp> {
       home: Navigator(
         pages: [
           MaterialPage(
-            child: HomePage(
-                futureCategories: futureCategories,
-                onTapCategory: _handleCategoryTapped),
-          ),
+              child: HomePage(
+            futureCategories: futureCategories,
+            onTapCategory: _handleCategoryTapped,
+            onSearch: _handleSearchTapped,
+          )),
           if (showMealsPage)
             MaterialPage(
                 child: MealsPage(
               futureMeals: futureMeals,
+              onTapMeal: _handleMealsTapped,
+            )),
+          if (showSearchPage)
+            MaterialPage(
+                child: SearchPage(
+              futureMealSearch: futureMealSearch,
               onTapMeal: _handleMealsTapped,
             )),
           if (showMealPage)
@@ -62,6 +72,7 @@ class _MyAppState extends State<MyApp> {
           setState(() {
             showMealsPage = false;
             showMealPage = false;
+            showSearchPage = false;
           });
 
           return true;
@@ -81,6 +92,13 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       futureMeal = fetchMealDetails(mealId);
       showMealPage = true;
+    });
+  }
+
+  void _handleSearchTapped(String mealName) {
+    setState(() {
+      futureMealSearch = searchMealDetails(mealName);
+      showSearchPage = true;
     });
   }
 }
