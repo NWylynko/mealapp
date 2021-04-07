@@ -63,8 +63,11 @@ class MealItem extends StatelessWidget {
     return Column(children: [
       Image.network(meal.strMealThumb),
       Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(32, 32, 32, 32),
-          child: Text(meal.strMeal))
+          padding: const EdgeInsetsDirectional.fromSTEB(32, 32, 4, 32),
+          child: Text(meal.strMeal)),
+      Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(32, 4, 32, 32),
+          child: Text('${meal.strArea} | ${meal.strCategory}'))
     ]);
   }
 }
