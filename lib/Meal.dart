@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class MealPage extends StatelessWidget {
@@ -12,8 +13,8 @@ class MealPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Meal Database App'),
+      appBar: const CupertinoNavigationBar(
+        middle: Text('Meal Database App'),
       ),
       body: Center(
         child: MealsScreen(futureMealDetails: futureMealDetails),
@@ -43,7 +44,7 @@ class MealsScreen extends StatelessWidget {
         }
 
         // By default, show a loading spinner.
-        return CircularProgressIndicator();
+        return CupertinoActivityIndicator();
       },
     );
   }
